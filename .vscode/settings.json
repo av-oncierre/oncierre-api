@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/c79eaeff-db67-4cc6-a3ef-adb3d0ecf33e/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/augment-api",
+    "appService.deploySubpath": ""
+}
