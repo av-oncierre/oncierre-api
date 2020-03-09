@@ -26,29 +26,18 @@ router.get('/', VerifyToken, async function (req, res, next) {
     )
   if (req.role === 'superadmin') {
     const querySpec = {
-      query: "SELECT * FROM root r WHERE r.type='center'"
+      query: "SELECT * FROM root r WHERE r.type='company'"
     }
     const { resources } = await container.items.query(querySpec).fetchAll()
     res.json(resources)
   } else if (req.role === 'companyadmin') {
+    
     const querySpec = {
-      query: "SELECT * FROM root r WHERE r.type='center' and r.companyID=@id",
+      query: "SELECT * FROM root r WHERE r.type='company' and r.id=@id",
       parameters: [
         {
           name: "@id",
           value: req.companyID
-        }
-      ]
-    }
-    const { resources } = await container.items.query(querySpec).fetchAll()
-    res.json(resources)
-  } else if (req.role === 'centeradmin') {
-    const querySpec = {
-      query: "SELECT * FROM root r WHERE r.type='center' and r.id=@id",
-      parameters: [
-        {
-          name: "@id",
-          value: req.centerID
         }
       ]
     }

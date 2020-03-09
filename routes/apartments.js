@@ -14,7 +14,6 @@ const databaseID = config.database.id;
 
 const containerID = 'org';
 
-
 var VerifyToken = require('./verifyToken');
 
 router.get('/', VerifyToken, async function (req, res, next) {
@@ -26,13 +25,13 @@ router.get('/', VerifyToken, async function (req, res, next) {
     )
   if (req.role === 'superadmin') {
     const querySpec = {
-      query: "SELECT * FROM root r WHERE r.type='center'"
+      query: "SELECT * FROM root r WHERE r.type='apartment'"
     }
     const { resources } = await container.items.query(querySpec).fetchAll()
     res.json(resources)
   } else if (req.role === 'companyadmin') {
     const querySpec = {
-      query: "SELECT * FROM root r WHERE r.type='center' and r.companyID=@id",
+      query: "SELECT * FROM root r WHERE r.type='apartment' and r.companyID=@id",
       parameters: [
         {
           name: "@id",
@@ -44,7 +43,7 @@ router.get('/', VerifyToken, async function (req, res, next) {
     res.json(resources)
   } else if (req.role === 'centeradmin') {
     const querySpec = {
-      query: "SELECT * FROM root r WHERE r.type='center' and r.id=@id",
+      query: "SELECT * FROM root r WHERE r.type='apartment' and r.centerID=@id",
       parameters: [
         {
           name: "@id",
@@ -55,7 +54,11 @@ router.get('/', VerifyToken, async function (req, res, next) {
     const { resources } = await container.items.query(querySpec).fetchAll()
     res.json(resources)
   } else {
-    res.status(403).send({ message: 'Access Denied' });
+    const querySpec = {
+      query: `SELECT * FROM root r WHERE r.type='apartment' and r.id in (${req.apartmentID.map(a => "'" + a + "'")})`
+    }
+    const {resources} = await container.items.query(querySpec).fetchAll() 
+    res.json(resources)
   }
 });
 
