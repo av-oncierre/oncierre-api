@@ -32,6 +32,15 @@ app.use('/centers', centersRouter);
 var apartmentsRouter = require('./routes/apartments');
 app.use('/apartments', apartmentsRouter);
 
+var centerRouter = require('./routes/center');
+app.use('/center', centerRouter);
+
+var companyRouter = require('./routes/company');
+app.use('/company', companyRouter);
+
+var apartmentRouter = require('./routes/apartment');
+app.use('/apartment', apartmentRouter);
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
