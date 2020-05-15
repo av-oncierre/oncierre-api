@@ -3,13 +3,39 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var bodyParser = require("body-parser");
 var cors = require('cors')
 var app = express();
+var dotenv = require( "dotenv" );
+dotenv.config();
 app.use(cors())
+app.use(bodyParser.json());
+const CosmosClient = require('@azure/cosmos').CosmosClient
+const config = require('./routes/db.config')
+const UserTaskList = require('./routes/usertasklist')
+const UserTaskDao = require('./models/userTaskDao')
+const cosmosClient = new CosmosClient({
+  endpoint: config.endpoint,
+  key: config.key
+})
 
-// view engine setup
-//app.set('views', path.join(__dirname, 'views'));
-//app.set('view engine', 'jade');
+const userTaskDao = new UserTaskDao(cosmosClient, config.database.id, config.database.containerID)
+const userTaskList = new UserTaskList(userTaskDao)
+userTaskDao
+  .init(err => {
+    console.error(err)
+  })
+  .catch(err => {
+    console.error(err)
+    console.error(
+      'Shutting down because there was an error settinig up the database.'
+    )
+    process.exit(1)
+  })
+
+app.post('/api/invite', (req, res, next) => userTaskList.addUserDetails(req, res).catch(next))
+app.post('/api/forgotpassword', (req, res, next) => userTaskList.forgotPassword(req, res).catch(next))
+app.post('/api/resetpassword', (req, res, next) => userTaskList.resetPassword(req, res).catch(next))
 
 app.use(logger('dev'));
 app.use(express.json());
